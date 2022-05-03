@@ -1,0 +1,10 @@
+backports.entry-points-selectable==1.1.0
+distlib==0.3.2
+filelock==3.0.12
+importlib-metadata==4.6.1
+platformdirs==2.1.0
+six==1.16.0
+typing-extensions==3.10.0.0
+VapourSynth==48
+virtualenv==20.6.0
+zipp==3.5.0
