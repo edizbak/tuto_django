@@ -51,6 +51,7 @@ urlpatterns = [
         name = 'password_change_done'),
     
     path('boards/<int:pk>/', views.boards_topics, name='boards_topics'),
+    path('boards/<int:pk>/sujets/<int:topic_pk>/', views.topic_posts, name='topic_posts'),
     path('boards/<int:pk>/new/', views.new_topic, name='new_topic'),
     path('admin/', admin.site.urls),
 ]

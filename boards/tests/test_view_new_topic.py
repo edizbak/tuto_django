@@ -81,7 +81,7 @@ class NewTopicTest(TestCase):
 class LoginRequiredNewTopicTests(TestCase):
 	def setUp(self):
 		Board.objects.create(name="Django", description="Foroume de test")
-		self.url = reverse('new_topic, kwargs={'pk': 1}')
+		self.url = reverse('new_topic', kwargs={'pk': 1})
 		self.response = self.client.get(self.url)
 
 	def test_redirection(self):
