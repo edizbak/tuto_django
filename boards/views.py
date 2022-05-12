@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Count
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, Http404
@@ -13,7 +14,8 @@ def home(request):
 
 def boards_topics(request, pk):
     board = get_object_or_404(Board, pk=pk)
-    return render(request, 'topics.html', {'board': board})
+    topics = board.topics.order_by('-last_update').annotate(replies=Count('posts'))
+    return render(request, 'topics.html', {'board': board, 'topics': topics})
 
 def topic_posts(request, pk, topic_pk):
     topic = get_object_or_404(Topic, board_id=pk, pk=topic_pk)

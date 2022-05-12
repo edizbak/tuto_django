@@ -29,9 +29,9 @@
         <tr>
           <td><a href="{% url 'topic_posts' board.pk topic.pk %}">{{ topic.subject }}</a></td>
           <td>{{ topic.starter.username }}</td>
+          <td>{{ topic.replies }}</td>
           <td>0</td>
-          <td>0</td>
-          <td>{{ topic.last_updated }}</td>
+          <td>{{ topic.last_update }}</td>
         </tr>
       {% endfor %}
     </tbody>
