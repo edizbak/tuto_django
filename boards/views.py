@@ -4,6 +4,7 @@ from django.views.generic import UpdateView
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.http import HttpResponse, Http404
 from boards.models import Board, Topic, Post
 from .forms import NewTopicForm, PostForm
@@ -63,12 +64,17 @@ def reply_topic(request, pk, topic_pk):
         form = PostForm()
     return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
 
+@method_decorator(login_required, name='dispatch')
 class PostUpdateView(UpdateView):
     model = Post
     fields = ('message', )
     template_name = 'edit_post.html'
     pk_url_kwarg = 'post_pk'
     context_object_name = 'post'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(created_by=self.request.user)
 
     def form_valid(self, form):
         post = form.save(commit=False)
