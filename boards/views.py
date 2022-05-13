@@ -14,11 +14,11 @@ def home(request):
 
 def boards_topics(request, pk):
     board = get_object_or_404(Board, pk=pk)
-    topics = board.topics.order_by('-last_update').annotate(replies=Count('posts'))
+    topics = board.topics.order_by('-last_update').annotate(replies=Count('posts') - 1)
     return render(request, 'topics.html', {'board': board, 'topics': topics})
 
 def topic_posts(request, pk, topic_pk):
-    topic = get_object_or_404(Topic, board_id=pk, pk=topic_pk)
+    topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
     return render(request, 'topic_posts.html', {'topic': topic})
 # Create your views here.
 
