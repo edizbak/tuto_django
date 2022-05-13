@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse, resolve
 from django.contrib.auth.models import User
-from ..views import home, boards_topics, new_topic
+from ..views import boards_topics, new_topic, BoardListView
 from ..models import Board, Topic, Post
 
 class HomeTests(TestCase):
@@ -15,7 +15,7 @@ class HomeTests(TestCase):
 
     def test_home_url_resolves_home_view(self):
         view = resolve('/')
-        self.assertEquals(view.func, home)
+        self.assertEquals(view.func.view_class, BoardListView)
 
     def test_home_view_contains_links_to_other_pages(self):
         board_topic_url = reverse('boards_topics', kwargs={'pk': self.board.pk})
