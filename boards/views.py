@@ -21,29 +21,71 @@ class BoardListView(ListView):
     template_name = 'home.html'
 
 
-def boards_topics(request, pk):
-    board = get_object_or_404(Board, pk=pk)
-    queryset = board.topics.order_by('-last_update').annotate(replies=Count('posts') - 1)
-    page = request.GET.get('page', 1)
+# mode GCBV pour 'boards_topics'
+class TopicListView(ListView):
+    model = Topic
+    context_object_name = 'topics'
+    template_name = 'topics.html'
+    paginate_by = 20
 
-    paginator = Paginator(queryset, 20)
+    def get_context_data(self, **kwargs):
+        kwargs['board'] = self.board
+        return super().get_context_data(**kwargs)
 
-    try:
-        topics = paginator.page(page)
-    except PageNotAnInteger:
-        # fallback to the first page
-        topics = paginator.page(1)
-    except EmptyPage:
-        # prob the user tried to add a page number in the url, so fallback on last
-        topics = paginator.page(paginator.num_pages)
-        
-    return render(request, 'topics.html', {'board': board, 'topics': topics})
+    def get_queryset(self):
+        self.board = get_object_or_404(Board, pk=self.kwargs.get('pk'))
+        queryset = self.board.topics.order_by('-last_update').annotate(replies=Count('posts') - 1)
+        return queryset
 
-def topic_posts(request, pk, topic_pk):
-    topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
-    topic.views += 1
-    topic.save()
-    return render(request, 'topic_posts.html', {'topic': topic})
+###################################################
+###### commenté pour passage en mode GCBV #########
+###################################################
+
+#def boards_topics(request, pk):
+#    board = get_object_or_404(Board, pk=pk)
+#    queryset = board.topics.order_by('-last_update').annotate(replies=Count('posts') - 1)
+#    page = request.GET.get('page', 1)
+#
+#    paginator = Paginator(queryset, 20)
+#
+#    try:
+#        topics = paginator.page(page)
+#    except PageNotAnInteger:
+#        # fallback to the first page
+#        topics = paginator.page(1)
+#    except EmptyPage:
+#        # prob the user tried to add a page number in the url, so fallback on last
+#        topics = paginator.page(paginator.num_pages)
+#        
+#    return render(request, 'topics.html', {'board': board, 'topics': topics})
+
+
+class PostListView(ListView):
+    model = Post
+    context_object_name = 'posts'
+    template_name = 'topic_posts.html'
+    paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        self.topic.views += 1
+        self.topic.save()
+        kwargs['topic'] = self.topic
+        return super().get_context_data(**kwargs)
+
+    def get_queryset(self):
+        self.topic = get_object_or_404(Topic, board__pk=self.kwargs.get('pk'), pk=self.kwargs.get('topic_pk'))
+        queryset = self.topic.posts.order_by('created_at')
+        return queryset
+
+##################################################
+###### Commenté pour réutilisation pagination ####
+##################################################
+
+#def topic_posts(request, pk, topic_pk):
+#    topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
+#    topic.views += 1
+#    topic.save()
+#    return render(request, 'topic_posts.html', {'topic': topic})
 # Create your views here.
 
 @login_required
